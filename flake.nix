@@ -9,14 +9,16 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
       });
 
-      scriptDir = ./.;
+
       getScriptName = x : lib.strings.removeSuffix ".sh" (builtins.baseNameOf x);
-      scriptSources = 
-        (lib.filter
-          (file: lib.hasSuffix ".sh" file )
-          (lib.filesystem.listFilesRecursive scriptDir));#
+      scriptSources =
+        (dir: 
+            (lib.filter
+            (file: lib.hasSuffix ".sh" file )
+            (lib.filesystem.listFilesRecursive dir))
+        );
     in
-    map (s: makeabin (getScriptName s) s) scriptSources;
+      (scriptDir: map (s: makeabin (getScriptName s) s) (scriptSources scriptDir));
 }
 
 
